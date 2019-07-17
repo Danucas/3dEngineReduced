@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Medialuna</title>
+	<meta name="theme-color" content="#c46a46">
+	<meta name="viewport" content="user-scalable=no, width=device-width" />
+	<meta name="google-signin-client_id" content="775057201875-f1mqe945bdqos9ag06s048asckctpfhm.apps.googleusercontent.com">
+	
+	<link rel="manifest" href="manifest.json">
+	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Assistant|Dosis|PT+Sans" rel="stylesheet">
+	<script src="https://apis.google.com/js/platform.js" async defer></script>
+	<script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
+
+
+</head>
+
+<body style="overflow: hidden;">
+	<div id="alert" style="display:none;">
+	<div id="camera_cont"></div>
+		<ul id="canvasList" ></ul>
+	<div id="drawing">
+
+
+
+
+
+		<div id="contrs">
+			<div id="controls_3d">
+				<div class="keyCont">
+					<button style="margin-left: 9vw;margin-top:0vw;background-image: url('src/control/up.png')"onclick="engine.mobileControl(38)"></button>
+					<button style="margin-left: 18vw;margin-top:9vw;background-image: url('src/control/right.png')"onclick="engine.mobileControl(39)"></button>
+					<button style="margin-left: 9vw;margin-top:18vw;background-image: url('src/control/down.png')"onclick="engine.mobileControl(40)"></button>
+					<button style="margin-left: 0vw;margin-top:9vw;background-image: url('src/control/left.png')"onclick="engine.mobileControl(37)"></button>
+				</div>
+				<div class="zaxis_cont">
+					<button style="margin-left: 0vw;margin-top:8vw;background-image: url('src/control/zMinus.png')" onclick="engine.mobileControl(77)"></button>
+					<button style="margin-left: 10vw;margin-top:0vw;background-image: url('src/control/zPlus.png')" onclick="engine.mobileControl(80)"></button>
+
+
+				</div>
+				<div class="modo_cont">
+
+					<button style="margin-left: 0vw;margin-top:0vw;background-image: url('src/control/tr.png')" onclick="engine.mobileControl(84)"></button>
+					<button style="margin-left: 12vw;margin-top:0vw;background-image: url('src/control/rot.png')"onclick="engine.mobileControl(82)"></button>
+					<button style="margin-left: 24vw;margin-top:0vw;background-image: url('src/control/scale.png')"onclick="engine.mobileControl(83)"></button>
+
+
+				</div>
+				<div class="focus">
+					<button id="camFocus" style="margin-left: 0vw;margin-top:0vw;background-image: url('src/control/camara.png')" onclick="engine.mobileControl(0)"></button>
+					<button id="objFocus"style="margin-left: 12vw;margin-top:0vw;background-image: url('src/control/obj.png')"onclick="engine.mobileControl(1)"></button>
+					<button style="margin-left: 24vw;margin-top:0vw;background-image: url('src/control/right.png')"onclick="engine.mobileControl(1000)"></button>
+				</div>
+				<div class="toEdit">
+					<button style="margin-left: 0vw;margin-top:0vw;background-image: url('src/control/vert.png')" onclick="engine.mobileControl(86)"></button>
+					<button style="margin-left: 12vw;margin-top:0vw;background-image: url('src/control/face.png')"onclick=""></button>
+					<button style="margin-left: 24vw;margin-top:0vw;background-image: url('src/control/linea.png')"onclick=""></button>
+
+
+				</div>
+				<div class="material">
+
+					<button style="margin-left: 12vw;margin-top:0vw;background-image: url('src/control/right.png')"onclick="engine.aplicarColor()"></button>
+					<div id="actColor" onclick="initColorPicker()"></div>
+
+				</div>
+		</div>
+
+
+
+
+
+	</div>
+	<div id="colorPicker">
+
+		<h1 id="pickerConsole"></h1>
+		<canvas id="saturation" ></canvas>
+		<div class="tonoCont">
+			<canvas id="tono" width="235" height="4"></canvas>
+			<input id="tonIn"type="range" step="1" min="0" max="1530" onchange="colorPicker.step(this.value)" oninput="colorPicker.step(this.value)"></input>
+
+		</div>
+
+		<img id="picked">
+		<button id="ok_color" onclick="colorPicker.setColor()"></button>
+
+	</div>
+
+	<h1 id="meta_AR">METADATA</h1>
+	<h1 id="console">log</h1>
+	<canvas id="canvas3d"></canvas>
+
+
+
+
+
+
+
+
+</div></body>
+
+
+<div id="loading" style="width: 102%;height: 102%;background-color: #fdf2f4;display: block;left: -1vw;top: -1vw;position: absolute;overflow: hidden;">
+	<div id="loadingImg" style="width: 12%;height: 12%;left: 44%;
+	                                             top:44%;
+                                                 size: contain;
+                                                 position:absolute;
+                                                background-repeat: no-repeat;
+                                                 background-size: contain;background-position: center center;"></div>
+		<h1 id="loadingTitle" style="font-family: 'Assistant', sans-serif;color: #ff8d56;width: 102vw;font-size: 1.6vw;top: 54%;text-align: center;position: absolute;margin-left: 0;">Cargando...</h1>
+
+</div>
+<script type="text/javascript">
+			if( navigator.userAgent.match(/Android/i)
+            	|| navigator.userAgent.match(/webOS/i)
+            	|| navigator.userAgent.match(/iPhone/i)
+            	|| navigator.userAgent.match(/iPad/i)
+            	|| navigator.userAgent.match(/iPod/i)
+            	|| navigator.userAgent.match(/BlackBerry/i)
+            	|| navigator.userAgent.match(/Windows Phone/i)
+             	){
+		 			var prefImg = "position:absolute;width:26%;height: 26%;margin-left:37%;top:37%;size: contain;background-repeat: no-repeat; background-size: contain;            background-position: center center;"
+		 			var prefTitle = "position:absolute;font-family: 'Assistant',sans-serif;color: #ff8d56;width: 102vw;font-size: 5.2vw;top: 56%;text-align: center;";
+
+		 			document.getElementById("loadingTitle").style = prefTitle;
+            		document.getElementById("loadingImg").style = prefImg;
+            		var foo = setCss('style_mob.css');
+            		setJs();
+
+            }else{
+
+            	var foo = setCss('style.css');
+            	setJs();
+
+            }
+
+            /*if ('serviceWorker' in navigator) {
+    			console.log("Will the service worker register?");
+    			navigator.serviceWorker.register('service-worker.js')
+      			.then(function(reg){
+        			console.log("Yes, it did.");
+      			}).catch(function(err) {
+        			console.log("No it didn't. This happened: ", err)
+      			});
+  			}*/
+            function setJs(){
+            	var main=document.createElement('script');
+            	main.setAttribute("src", "compiled.js");
+            	main.setAttribute("type","text/javascript");
+            	document.body.appendChild(main);
+
+            }
+
+
+  			 function setCss(filename){
+       			 var head = document.getElementsByTagName('head')[0];
+
+        		var style = document.createElement('link');
+        		style.href = filename;
+        		style.type = 'text/css';
+        		style.rel = 'stylesheet';
+        		head.append(style);
+        		return true;
+    		}
+	</script>
+</html>
