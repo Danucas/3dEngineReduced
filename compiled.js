@@ -1,5 +1,6 @@
 
 	var e = import("./@m-3dengine/engine.js");
+	var fromMob=false;
 	var engine;
 	e.then(function(en){
 		
@@ -14,6 +15,17 @@
 		function ponerAlgo(){
 			return algo;
 		}
+	}
+	var ColorPicker;
+	function initColorPicker(){
+		var promise = import("./@m-colorPicker/colorPicker.js");
+		promise.then(function(val){
+			ColorPicker = new val.default();
+			ColorPicker.init();
+		});
+
+    	
+		
 	}
 	
 

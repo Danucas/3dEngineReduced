@@ -5,6 +5,9 @@ function engine(){
         this.setRequestedColor = setRequestedColor;
         this.aplicarColor = aplicarColor;
         this.initCamara = initCamara;
+        this.acelerate = acelerate;
+        this.stopMotion = stopMotion;
+        this.generateWorld = generateWorld;
         console.log('engine started');
         var camara ;
         var camaras = [];
@@ -27,21 +30,36 @@ function engine(){
         var log = document.getElementById('console');
         var modelo3d;
         var viewport;
-        var fromMob=false;
+        var cubo;
+        var fi;
 
 
 
 
 
         var gl;
-
+        //camaras y demas
 
 
         function initCamara(){
           camara = new Camara();
-          camara.pos.z = 3;
+          camara.pos.z = 2;
+          camara.rotation.z = 3.1416;
+          camara.type = 'self';
           viewport = new Viewport();
           initialize3dCanvas();
+
+        }
+
+        function setPlayerCamara() {
+           camaras[0] = [camara, viewport];
+           camara = new Camara();
+           camara.pos.z = 12;
+           camara.pos.y = 2;
+           camara.rotation.z = 3.1416;
+           camara.type = 'third-p';
+           viewport = new Viewport();
+           renderScene(scene);
 
         }
         function dibujarWorldAxis(con){
@@ -88,11 +106,15 @@ function engine(){
 
           return true;
         }
+
         function cargarmodelo(file){
           load3dObj(file).then((mod)=>{
             //console.log(mod);
             var md = new Mesh(mod, file);
+            cubo = mod;
+            fi = file;
             scene.push(md);
+            
             rend();
           });
         }
@@ -107,6 +129,34 @@ function engine(){
         function setCamaraK(k){
            camara.rotation ={x:k[0][0] ,y:k[1][1] ,z:[2][2] };
            camara.pos = {x:k[0][2] ,y:[1][2] ,z:k[2][2] };
+        }
+        function generateWorld(){
+            var  cantObjs = 100;
+            for(var i=0; i<cantObjs; i++){
+              var newCube = new Mesh(cubo, fi+i );
+              var max = 100;
+              var min = 12;
+              var r = Math.floor(Math.random()*(255 - 0)) + + 18;
+              var g  = Math.floor(Math.random()*(255 - 0)) + + 18;
+              var b  = Math.floor(Math.random()*(255 - 0)) + + 18;
+              //console.log(r, g, b);
+               var rgb ={r:r, g:g, b:b};
+               var scal =  Math.floor(Math.random()*(2 - 0.6)) + + 0.6;
+               var x = Math.floor(Math.random()*(30 - - 20)) + + - 20;
+              var y  = Math.floor(Math.random()*(30 - - 10)) + + - 10;
+              var z  = Math.floor(Math.random()*(100 - 40)) + + 40;
+              
+              newCube.ObjTranslation = {x: x , y: y, z: b};
+              newCube.scala = scal;
+              newCube.setColor({r:105, g:100, b:30});
+              scene.push(newCube);
+            }
+            scene.reverse();
+            actualObj = scene.length-1;
+            scene[actualObj].rgb = {r: 255, g:230 , b:190 };
+            renderScene(scene);
+
+
         }
 
         function initialize3dCanvas(){
@@ -395,19 +445,23 @@ function engine(){
               this.model = model;
               this.name = nombre;
               this.ObjRotation = {x:0,y:0, z:0};
-              this.ObjTranslation = {x:0,y:0, z:0};
+              this.ObjTranslation = {x:0,y:0, z:6};
               this.up = {x:0, y:0,z:0};
               this.scala = 1;
               this.origin = this.setCenterOrigin(model.vertices)[0];
               this.poligons = this.convertToMesh(model);
               this.axis = this.setCenterOrigin(model.vertices)[1];
-              this.rgb = {r:255, g:0, b:0};
+              this.rgb = {r:105, g:100, b:30};
            }
            alignToParent(){
              var m =  this.translate(this.rotate(this.scalar(this.origin)));
              var newVec = sumarVec(Parent.pos, new Vector(m));
              console.log(Parent.pos ,newVec, m);
              this.setTranslation(Parent.pos);
+           }
+
+           getTargetOrigin(){
+            return this.translate([this.origin.x, this.origin.y, this.origin.z]);
            }
 
            setCenterOrigin(vertices) {
@@ -447,8 +501,8 @@ function engine(){
                zMid += 0.003;
              }
 
-             var xAxis = [xMax/1.6, yMid, zMid];
-             var yAxis = [xMid, yMin/1.6, zMid];
+             var xAxis = [xMin/1.6, yMid, zMid];
+             var yAxis = [xMid, yMax/1.6, zMid];
              var zAxis = [xMid, yMid, zMax/1.6];
 
 
@@ -492,9 +546,11 @@ function engine(){
 
            }
            rotate(vertice){
-                var tempx = vertice[0]-this.origin.x;
-                var tempy = vertice[1]-this.origin.y;
-                var tempz = vertice[2]-this.origin.z;
+                var or = [this.origin.x, this.origin.y, this.origin.z];
+
+                var tempx = vertice[0]-or[0];
+                var tempy = vertice[1]-or[1];
+                var tempz = vertice[2]-or[2];
 
 
                 var overX = this.ObjRotation.x;
@@ -681,16 +737,31 @@ function engine(){
             }
 
             rotate(vertice){
-                 var tempx;
-                 var tempy;
-                 var tempz;
+
+                var or = scene[actualObj].getTargetOrigin();
+                //console.log(or)
+
+                if(this.type=='third-p'){
+                  var tempx = vertice[0]-or[0];
+                  var tempy = vertice[1]-or[1];
+                  var tempz = vertice[2]-or[2];
+                  
+                }else{
+                  var tempx = vertice[0]-this.pos.x;
+                  var tempy = vertice[1]-this.pos.y;
+                  var tempz = vertice[2]-this.pos.z;
+                }
+
+                
+
+                 
                  var overX = this.rotation.x;
                  var overY = this.rotation.y;
                  var overZ = this.rotation.z;
                  //rotar en x
-                 var i = (1)*(vertice[0])+(0)*(vertice[1])+(0)*(vertice[2]);
-                 var j = (0)*(vertice[0])+(Math.cos(overX))*(vertice[1])+(-(Math.sin(overX)))*(vertice[2]);
-                 var k = (0)*(vertice[0])+(Math.sin(overX))*(vertice[1])+(Math.cos(overX))*(vertice[2]);
+                 var i = (1)*(tempx)+(0)*(tempy)+(0)*(tempz);
+                 var j = (0)*(tempx)+(Math.cos(overX))*(tempy)+(-(Math.sin(overX)))*(tempz);
+                 var k = (0)*(tempx)+(Math.sin(overX))*(tempy)+(Math.cos(overX))*(tempz);
                  tempx = i;
                  tempy = j;
                  tempz = k;
@@ -726,7 +797,7 @@ function engine(){
         class Viewport {
 
             constructor(){
-              this.pos= {x:0, y:150, z:camara.pos.z+40};
+              this.pos= {x:0, y:150, z:camara.pos.z+100};
               this.up={x:0, y:150, z:0};
               this.width= 300;
               this.height=300;
@@ -747,15 +818,7 @@ function engine(){
 
 
 
-        function setPlayerCamara() {
-           camaras[0] = [camara, viewport];
-           camara = new Camara();
-           camara.pos.z = -30;
-           viewport = new Viewport();
-           viewport.pos.z = -15;
-           renderScene(scene);
-
-        }
+        
         var Parent = {
             pos:{x: 0, y:0, z:20}
         }
@@ -771,9 +834,9 @@ function engine(){
         }
         function sumarVec(vec1, vec2) {
           var newVec = {
-            x: parseFloat(vec1.x+vec2.x),
-            y: parseFloat(vec1.y+vec2.y),
-            z: parseFloat(vec1.z+vec2.z)
+            x: round(vec1.x+vec2.x, 4),
+            y: round(vec1.y+vec2.y, 4),
+            z: round(vec1.z+vec2.z, 4)
           }
           return newVec;
         }
@@ -935,7 +998,8 @@ function engine(){
             context.lineWidth = '1';
             context.clearRect(0, 0, canvas.width, canvas.height);
             //var axis = dibujarWorldAxis(context);
-            //console.log('Camara pos: ', camara.pos);
+            console.log('Camara pos: ', camara.pos);
+            console.log('ObjTranslation: ', scene[actualObj].ObjTranslation);
             //console.log('Viewport pos: ', viewport.pos);
             var object_strokeLine = 'rgba(0,0,0, 1)';
             scena.forEach(object=>{
@@ -1014,6 +1078,8 @@ function engine(){
             var colors = ['blue','red',  'green'];
             var ax = ['x', 'y', 'z'];
             context.lineWidth = '1';
+            //dibujar axis
+            /*
             for(var i= 0;i<3;i++){
 
               context.beginPath();
@@ -1030,6 +1096,8 @@ function engine(){
               context.fill();
               context.closePath();
             }
+
+            */
 
         }
 
@@ -1085,6 +1153,9 @@ function engine(){
         function commandKey(code, shift){
           console.log(code);
           switch(code){
+              case 27:
+                 initCamara();
+                 break;
               case 37:
               console.log(rotar);
                //left
@@ -1218,14 +1289,14 @@ function engine(){
                   if(scalar&&!cam){
                     scene[actualObj].scala += 0.01;
                   }else{
-                    //dezplazar objeto hacia atras
+                    //dezplazar objeto hacia adelante
                     if(editMode!='none'){
                        if(selectedVer!=null){
                            scene[actualObj].translateVert(selectedVer, {x:0 ,y:0 ,z:0.19625});
                        }
 
                     }else{
-                        scene[actualObj].setTranslation({x:0, y:0, z:-0.4});
+                        scene[actualObj].setTranslation({x:0, y:0, z:0.4});
                     }
 
                   }
@@ -1236,14 +1307,14 @@ function engine(){
                   if(scalar&&!cam){
                       scene[actualObj].scala -= 0.01;
                   }else{
-                    //dezplazar objeto hacia adelante
+                    //dezplazar objeto hacia atras
                     if(editMode!='none'){
                        if(selectedVer!=null){
                            scene[actualObj].translateVert(selectedVer, {x:0 ,y:-0.19625 ,z:0});
                        }
 
                     }else{
-                          scene[actualObj].setTranslation({x:0, y:-0.4, z:0});
+                          scene[actualObj].setTranslation({x:0, y:0, z:-0.4});
                     }
 
                   }
@@ -1278,10 +1349,12 @@ function engine(){
                   break;
               case 33:
                   sumTranslate({x:0, y:0, z:-1});
+                  scene[actualObj].setTranslation({x:0, y:0, z:-1});
                   renderScene(scene);
                   break;
               case 34:
                   sumTranslate({x:0, y:0, z:1});
+                  scene[actualObj].setTranslation({x:0, y:0, z:1});
                   renderScene(scene);
                   break;
               case 82:
@@ -1472,6 +1545,135 @@ function engine(){
         function setRequestedColor(rgb){
             reqCOLOR = rgb;
             document.getElementById('actColor').style.backgroundColor = 'rgb('+rgb.r+','+rgb.g+','+rgb.b+')';
+        }
+
+
+
+        //seccion de fisicas
+
+
+        function acelerate(){
+          console.log('Begin motion');
+          scene[actualObj].acceleration = 0.6;
+          scene[actualObj].velocity = 0;
+          //console.log(obj.axis[0][2]);
+          update();
+          
+        }
+        var frame = 0;
+        var fps = round(1000/15, 0);
+        var frameRate = 15
+        var upd;
+        var initDif;
+        function update(){
+          console.log(fps);
+          
+          upd = setInterval(function(){
+            var obj = scene[actualObj];
+            var maxSpeed = 2;
+
+            if(obj.velocity<maxSpeed){
+              obj.velocity += round(obj.acceleration/fps, 2);
+
+            }
+
+            var mo = motionValues(obj.transform(obj.axis[2]), obj.transform([obj.origin.x, obj.origin.y, obj.origin.z] ));
+
+            /*console.log('velocidad:', obj.velocity, '\nframe count: ', frame,
+                        'axisZ pos: ', obj.transform(obj.axis[2]),
+                        'obj origin: ', obj.transform([obj.origin.x, obj.origin.y, obj.origin.z]),
+                        'motion values: ', mo);*/
+            
+            //console.log({x:obj.ObjTranslation.x+mo[0], y:obj.ObjTranslation.y+mo[1], z:obj.ObjTranslation.z+mo[2]});
+            var x = round((mo.obj.x/frameRate), 2);
+            var y = round((mo.obj.y/frameRate), 2);
+            var z = round((mo.obj.z/frameRate), 2);
+
+            var xc = round((mo.cam.x/frameRate), 2);
+            var yc = round((mo.cam.y/frameRate), 2);
+            var zc = round((mo.cam.z/frameRate), 2);
+
+
+            //console.log('mo:',{x:x,y:y,z:z}, mo,
+             //           'Obj tran: ', obj.ObjTranslation);
+            scene[actualObj].setTranslation({x:x,y:y, z:z});
+            //camara.pos = {x:xc,y:yc, z:zc};
+
+            if(frame%15==0){
+              console.log(frame);
+              //console.log('mo:',{x:x,y:y,z:z}); 
+            }
+            
+            //sumTranslate({x:mo[0],y:mo[1], z:mo[2]});
+            frame ++;
+            //if(!rendering){
+              rendering = false;
+              renderScene(scene);
+            //}
+            
+          },fps );
+        }
+        function motionValues(axis, origin){
+         // console.log(axis, origin);
+            var xdiff = round(axis[0]-origin[0], 2);
+            var ydiff = round(axis[1]-origin[1], 2);
+            var zdiff = round(axis[2]-origin[2], 2);
+            if(axis[0]<0){xdiff*=-1}
+            if(axis[1]<0){ydiff*=-1}
+            if(axis[2]<0){zdiff*=-1}
+            var camDistance = 8;
+
+            var V = [round(axis[0]-origin[0], 2),round(axis[1]-origin[1], 2),round(axis[2]-origin[2], 2)];
+            var VL = Math.sqrt((Math.pow(V[0], 2)+Math.pow(V[1], 2)+Math.pow(V[2], 2)));
+            var vf = [V[0]/VL, V[1]/VL, V[2]/VL ];
+            var Pd = [((origin[0]+camDistance)*vf[0]),((origin[1]+camDistance)*vf[1]),((origin[2]+camDistance)*vf[2])]
+            if(isNaN(Pd[0])){Pd[0]=0}
+            if(isNaN(Pd[1])){Pd[1]=0}
+            if(isNaN(Pd[2])){Pd[2]=0}
+
+            console.log('axis: ', axis, 'origin: ', origin, 'camPoint: ', Pd,
+                           {x: xdiff ,y: ydiff ,z:zdiff  }, scene[actualObj].ObjTranslation);
+             return {cam: {x: Pd[0]  ,y:Pd[1]  ,z:Pd[2] }, obj:  {x: xdiff ,y: ydiff ,z:zdiff  } };
+
+            /*
+            if(initDif==null){
+              initDif = {x: xdiff , y: ydiff , z:zdiff};
+            }
+            var xm = (scene[actualObj].velocity*xdiff)/initDif.x;
+            var ym = (scene[actualObj].velocity*xdiff)/initDif.y;
+            var zm = (scene[actualObj].velocity*xdiff)/initDif.z;
+            
+            
+
+            var xcam = (camDistance*xdiff)/initDif.x;
+            if(isNaN(xcam)){xcam = 0}
+            var ycam = (camDistance*ydiff)/initDif.y;
+            if(isNaN(ycam)){ycam = 0}
+            var zcam = (camDistance*zdiff)/initDif.z;
+            if(isNaN(zcam)){zcam = 0}
+
+            xcam = round((axis[0]-camDistance)*origin[0], 2);
+            ycam = round((axis[1]-camDistance)*origin[1], 2);
+            zcam = round((axis[2]-camDistance)*origin[2], 2);
+
+            //valores de la camara
+            console.log(xcam, ycam, zcam);
+            console.log(scene[actualObj].getTargetOrigin());
+            var xc = scene[actualObj].getTargetOrigin()[0]+xcam;
+            var yc  = scene[actualObj].getTargetOrigin()[1]+ycam;
+            var zc  = scene[actualObj].getTargetOrigin()[2]+zcam;
+
+
+            console.log({cam: {x: xc  ,y:yc  ,z:zc  }, obj:  {x: xdiff ,y: ydiff ,z:zdiff  } });
+            return {cam: {x: xc  ,y:yc  ,z:zc  }, obj:  {x: xdiff ,y: ydiff ,z:zdiff  } };
+            */
+        }
+
+
+        function stopMotion(){
+          console.log('Motion stoped');
+          clearInterval(upd);
+          frame = 0;
         }
 
         

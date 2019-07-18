@@ -28,10 +28,10 @@
 		<div id="contrs">
 			<div id="controls_3d">
 				<div class="keyCont">
-					<button style="margin-left: 9vw;margin-top:0vw;background-image: url('src/control/up.png')"onclick="engine.mobileControl(38)"></button>
-					<button style="margin-left: 18vw;margin-top:9vw;background-image: url('src/control/right.png')"onclick="engine.mobileControl(39)"></button>
-					<button style="margin-left: 9vw;margin-top:18vw;background-image: url('src/control/down.png')"onclick="engine.mobileControl(40)"></button>
-					<button style="margin-left: 0vw;margin-top:9vw;background-image: url('src/control/left.png')"onclick="engine.mobileControl(37)"></button>
+					<button style="margin-left: 6vw;margin-top:0vw;background-image: url('src/control/up.png')"onclick="engine.mobileControl(38)"></button>
+					<button style="margin-left: 12vw;margin-top:6vw;background-image: url('src/control/right.png')"onclick="engine.mobileControl(39)"></button>
+					<button style="margin-left: 6vw;margin-top:12vw;background-image: url('src/control/down.png')"onclick="engine.mobileControl(40)"></button>
+					<button style="margin-left: 0vw;margin-top:6vw;background-image: url('src/control/left.png')"onclick="engine.mobileControl(37)"></button>
 				</div>
 				<div class="zaxis_cont">
 					<button style="margin-left: 0vw;margin-top:8vw;background-image: url('src/control/zMinus.png')" onclick="engine.mobileControl(77)"></button>
@@ -59,6 +59,20 @@
 
 
 				</div>
+				<div class="motionPanel">
+
+					<button style="margin-left: 2vw;margin-top:2vw;background-image: url('src/control/vert.png')"onclick="engine.stopMotion()"></button>
+					<button style="margin-left: 9vw;margin-top:2vw;background-image: url('src/control/right.png')"onclick="engine.acelerate()"></button>
+					<button style="margin-left: 16vw;margin-top:2vw;background-image: url('src/control/camara.png')"onclick="engine.setPlayerCamara()"></button>
+					<button style="margin-left: 23vw;margin-top:2vw;background-image: url('src/control/obj.png')"onclick="engine.generateWorld()"></button>
+
+
+
+
+					
+
+					
+				</div>
 				<div class="material">
 
 					<button style="margin-left: 12vw;margin-top:0vw;background-image: url('src/control/right.png')"onclick="engine.aplicarColor()"></button>
@@ -78,12 +92,12 @@
 		<canvas id="saturation" ></canvas>
 		<div class="tonoCont">
 			<canvas id="tono" width="235" height="4"></canvas>
-			<input id="tonIn"type="range" step="1" min="0" max="1530" onchange="colorPicker.step(this.value)" oninput="colorPicker.step(this.value)"></input>
+			<input id="tonIn"type="range" step="1" min="0" max="1530" onchange="ColorPicker.step(this.value)" oninput="ColorPicker.step(this.value)"></input>
 
 		</div>
 
 		<img id="picked">
-		<button id="ok_color" onclick="colorPicker.setColor()"></button>
+		<button id="ok_color" onclick="ColorPicker.setColor()"></button>
 
 	</div>
 

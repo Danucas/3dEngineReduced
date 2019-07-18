@@ -25,12 +25,14 @@
 
 #alert{
 	width: 102vw;
-	height: 108%;
+	height: 100vw;
 	top: -2vw;
 	left: -2vw;
 	background-color: rgba(91, 86, 86, 0.4);
 	position: absolute;
 	display: none;
+	overflow: hidden;
+	
 }
 #capture{
 	width: 18vw;
@@ -194,14 +196,15 @@
 
 #meta_AR{
  color: yellow;
- width: 46vw;
+ width: 18vw;
  height: 6vw;
  position: absolute;
- margin-top: 94vw;
- font-size: 3.4vw;
+ margin-top: 3vw;
+ margin-left: 80vw;
+ font-size: 1.8vw;
  text-align: left;
  font-family: 'Assistant', sans-serif;
- padding-left: 4vw;
+ padding-left: 2vw;
  padding-bottom: 1vw;
  background-color: rgba(0, 0, 0, 1);
  text-shadow: 0px 0px 5px rgb(5, 5, 5);
@@ -209,25 +212,44 @@
 
 
 }
+
+#console{
+	height: 6vw;
+	width: 18vw;
+	margin-top: 3vw;
+	margin-left: 60vw;
+	font-size: 1.8vw;
+	text-align: left;
+	position: absolute;
+  font-family: 'Assistant', sans-serif;
+	padding-left: 2vw;
+	padding-bottom: 1vw;
+	color: #ccfc7e;
+	text-shadow: 0px 0px 5px rgb(5, 5, 5);
+	background-color: rgba(0, 0, 0, 1);
+
+}
 #contrs{
 	width: 100vw;
-	height: 40vw;
+	height: 30vw;
 	margin-top: 60vw;
 
 	position: absolute;
 
 	overflow-y: scroll;
-	overflow-x: hidden;
+	overflow-x: scroll;
 
 
 }
 
 #controls_3d{
   background-color: grey;
-	padding-top: 4vw;
-	min-height: 10vw;
+	padding-top: 2vw;
+	min-height: 6vw;
 	height:40vw;
 	width: 100vw;
+	overflow-y: scroll;
+	overflow-x: hidden;
 
 
 }
@@ -235,74 +257,82 @@
 	cursor: pointer;
 
 }
-#console{
-	height: 6vw;
-	width: 46vw;
-	margin-top: 94vw;
-	margin-left: 50vw;
-	font-size: 3.2vw;
-	text-align: left;
-	position: absolute;
-  font-family: 'Assistant', sans-serif;
-	padding-left: 4vw;
-	padding-bottom: 1vw;
-	color: #ccfc7e;
-	text-shadow: 0px 0px 5px rgb(5, 5, 5);
-	background-color: rgba(0, 0, 0, 1);
 
-}
 .keyCont{
-	width: 28vw;
-	height: 28vw;
-	position: absolute;
-
-	margin-top: 18vw;
-	margin-left: 6vw;
-}
-
-.keyCont button{
-	width: 10vw;
-	height: 10vw;
-	border-style: none;
-	background-color: transparent;
-	background-size: contain;
-	background-repeat: no-repeat;
-	background-position: center;
-	position: absolute;
-	padding: 2vw;
-
-}
-.zaxis_cont {
-	width: 24vw;
+	width: 18vw;
 	height: 18vw;
 	position: absolute;
 
-	margin-top: 2vw;
-	margin-left: 2vw;
-
+	margin-top: 8vw;
+	margin-left:6vw;
 }
-.zaxis_cont button{
-	width: 8vw;
-	height: 8vw;
+
+
+
+.keyCont button{
+	width: 6vw;
+	height: 6vw;
 	border-style: none;
 	background-color: transparent;
 	background-size: contain;
 	background-repeat: no-repeat;
 	background-position: center;
 	position: absolute;
-	padding: 2vw;
+	padding: 1vw;
+
+}
+
+.motionPanel{
+	width: 18vw;
+	height: 18vw;
+	position: absolute;
+
+	margin-top: 12vw;
+	margin-left:28vw;	
+}
+.motionPanel button{
+	width: 6vw;
+	height: 6vw;
+	border-style: none;
+	background-color: transparent;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	position: absolute;
+	padding: 1vw;
+
+}
+.zaxis_cont {
+	width: 10vw;
+	height: 12vw;
+	position: absolute;
+
+	margin-top: 1vw;
+	margin-left: 1vw;
+
+}
+.zaxis_cont button{
+	width: 6vw;
+	height: 6vw;
+	border-style: none;
+	background-color: transparent;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	position: absolute;
+	padding: 1vw;
 
 }
 .modo_cont{
 	width: 34vw;
-	height: 10vw;
+	height: 6vw;
 	position: absolute;
-	margin-top: 26vw;
+	margin-top: 14vw;
 	margin-left: 60vw;
 }
 .modo_cont button{
-	width: 10vw;
-	height: 10vw;
+	width: 6vw;
+	height: 6vw;
 	border-style: none;
 	background-color: transparent;
 	background-size: contain;
@@ -313,13 +343,13 @@
 }
 .focus{
 	width: 34vw;
-	height: 10vw;
+	height: 6vw;
 	margin-left: 60vw;
 	position: absolute;
 }
 .focus button{
-	width: 10vw;
-	height: 10vw;
+	width: 6vw;
+	height: 6vw;
 	background-color: #424240;
 	border-radius: 50vw;
 	border-style: none;
@@ -332,14 +362,14 @@
 }
 .toEdit{
 	width: 34vw;
-	height: 10vw;
+	height: 6vw;
 	position: absolute;
-	margin-top: 14vw;
+	margin-top: 7vw;
 	margin-left: 60vw;
 }
 .toEdit button{
-	width: 10vw;
-	height: 10vw;
+	width: 6vw;
+	height: 6vw;
 	border-style: none;
 	background-color: transparent;
 	background-size: contain;
@@ -350,14 +380,14 @@
 }
 .material{
 	width: 34vw;
-	height: 10vw;
+	height: 6vw;
 	position: absolute;
 	margin-top:38vw;
 	margin-left: 60vw;
 }
 .material button{
-	width: 10vw;
-	height: 10vw;
+	width: 6vw;
+	height: 6vw;
 	border-style: none;
 	background-color: transparent;
 	background-size: contain;
@@ -403,8 +433,8 @@
 	position: absolute;
 }
 #ok_color{
-	width: 10vw;
-	height: 10vw;
+	width: 6vw;
+	height: 6vw;
 	border-radius: 50px;
 	border-style: none;
 	background-color: transparent;
