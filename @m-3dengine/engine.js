@@ -131,7 +131,7 @@ function engine(){
            camara.pos = {x:k[0][2] ,y:[1][2] ,z:k[2][2] };
         }
         function generateWorld(){
-            var  cantObjs = 100;
+            var  cantObjs = 30;
             for(var i=0; i<cantObjs; i++){
               var newCube = new Mesh(cubo, fi+i );
               var max = 100;
