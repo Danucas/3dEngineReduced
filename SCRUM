@@ -6,3 +6,23 @@ desacelerador
 
 importar sphera
 
+axis rotacion
+
+selector de axis usando color del pixel
+
+agregar objetos por defecto
+
+ajustar controles
+agregar escuchas al canvas
+
+agregar editores de bordes y caras
+arreglar editor de vertices
+
+agregar camaras left rigth top front back
+
+oclussion culling
+preview assets
+
+
+
+

@@ -32,13 +32,8 @@ function engine(){
         var viewport;
         var cubo;
         var fi;
-
-
-
-
-
-        var gl;
-        //camaras y demas
+          var gl;
+        //camaras y de""mas
 
 
         function initCamara(){
@@ -46,6 +41,7 @@ function engine(){
           camara.pos.z = 2;
           camara.rotation.z = 3.1416;
           camara.type = 'self';
+         
           viewport = new Viewport();
           initialize3dCanvas();
 
@@ -131,10 +127,10 @@ function engine(){
            camara.pos = {x:k[0][2] ,y:[1][2] ,z:k[2][2] };
         }
         function generateWorld(){
-            var  cantObjs = 30;
+            var  cantObjs = 20;
             for(var i=0; i<cantObjs; i++){
               var newCube = new Mesh(cubo, fi+i );
-              var max = 100;
+              var max = 50;
               var min = 12;
               var r = Math.floor(Math.random()*(255 - 0)) + + 18;
               var g  = Math.floor(Math.random()*(255 - 0)) + + 18;
@@ -451,7 +447,11 @@ function engine(){
               this.origin = this.setCenterOrigin(model.vertices)[0];
               this.poligons = this.convertToMesh(model);
               this.axis = this.setCenterOrigin(model.vertices)[1];
-              this.rgb = {r:105, g:100, b:30};
+              this.rgb = {r:156,g:226, b:250
+              };
+              
+              this.rotaxis = this.setCenterOrigin(model.vertices)[2];
+              //console.log(this.rotaxis);
            }
            alignToParent(){
              var m =  this.translate(this.rotate(this.scalar(this.origin)));
@@ -463,6 +463,17 @@ function engine(){
            getTargetOrigin(){
             return this.translate([this.origin.x, this.origin.y, this.origin.z]);
            }
+           getRaxis(pos){
+             
+             var raxs=new Array();
+             for(var k=0;k<this.rotaxis[pos].length;k++){
+        
+             var a = this.translate(this.rotate(this.scalar(this.rotaxis[pos][k])));
+             raxs.push([round(a[0], 2), round(a[1],2),round(a[2],2)]);
+             }
+             
+             return raxs;
+             }
 
            setCenterOrigin(vertices) {
             // console.log(vertices);
@@ -492,23 +503,32 @@ function engine(){
 
 
              if(xMid==0){
-               xMid += 0.003;
+               xMid = 0.003;
              }
              if(yMid==0){
-               yMid += 0.003;
+               yMid = 0.003;
              }
              if(zMid==0){
-               zMid += 0.003;
+               zMid = 0.003;
              }
 
              var xAxis = [xMin/1.6, yMid, zMid];
              var yAxis = [xMid, yMax/1.6, zMid];
              var zAxis = [xMid, yMid, zMax/1.6];
+             //eje rotacion sobre x
+             var rxaxisx1 = round(xMid,2);
+             var rxaxisy1 = round(yMid,2);
+             var rxaxisz1 = round(zMin,2);
+             
+             var rxaxisx2 = round(xMid,2);
+             var rxaxisy2 = round(yMax,2);
+             var rxaxisz2 = round(zMin,2);
 
 
-
-
-             return [{x:xMid , y:yMid , z:zMid}, [xAxis, yAxis, zAxis]] ;
+             return [{x:xMid , y:yMid , z:zMid}, [xAxis, yAxis, zAxis],[[[rxaxisx1,rxaxisy1,rxaxisz1],[rxaxisx2,rxaxisy2,rxaxisz2],
+             [xMid,yMax,zMid],
+             [xMid, yMax, zMax],
+             [xMid,yMid, zMax],[xMid,yMin,zMax],[xMid, yMin, zMid],[xMid,yMin,zMin]]] ] ;
            }
 
 
@@ -521,7 +541,7 @@ function engine(){
            getAxis(){
              var axs = []
              for (var i=0; i<this.axis.length;i++){
-                var  tranformedAxis = this.translate(this.rotate(this.scalar([this.axis[i][0], this.axis[i][1], this.axis[i][2]])));
+                var  tranformedAxis = this.translate(this.rotate(this.scalar(this.axis[i])));
                 axs.push(tranformedAxis);
              }
              return axs;
@@ -1006,7 +1026,7 @@ function engine(){
                 var rgb = object.getColor();
                 context.strokeStyle = object_strokeLine;
                 context.fillStyle = 'rgba('+ rgb.r+','+ rgb.g+','+ rgb.b+', 1)';
-                renderMesh(object.mergeMesh(), context, dx, dy, [rgb.r, rgb.g, rgb.b], object.getOrigin(), object.getAxis());
+              renderMesh(object.mergeMesh(), context, dx, dy, [rgb.r, rgb.g, rgb.b], object.getOrigin(), object.getAxis(),object.name, object.getRaxis(0));
                 //console.log(object.ObjTranslation);
                 //console.log(object);
                 //console.log(object, object.mergeMesh());
@@ -1028,7 +1048,7 @@ function engine(){
           cliking = false;
         }
 
-        function renderMesh(faces, context, dx, dy, rgb, origin, axis){
+        function renderMesh(faces, context, dx, dy, rgb, origin, axis, name,raxis){
 
             var r = rgb[0];
             var g=  rgb[1];;
@@ -1078,27 +1098,59 @@ function engine(){
             var colors = ['blue','red',  'green'];
             var ax = ['x', 'y', 'z'];
             context.lineWidth = '1';
+            
+            //console.log(raxis);
             //dibujar axis
-            /*
-            for(var i= 0;i<3;i++){
-
-              context.beginPath();
-              context.moveTo(Or.x+dx, Or.y +dy);
-              context.strokeStyle = colors[i];
-              context.fillStyle = colors[i];
-              var s = project(axis[i], camara);
-              context.lineTo(Math.round(s.x+dx), Math.round(s.y+dy));
-              //console.log('dibujando', axis[i], s.x+dx, s.y+dy);
-              context.rect(Math.round(s.x+dx), Math.round(s.y+dy), 1.4, 1.4);
-              context.font = "8px Arial";
-              context.fillText(ax[i], Math.round(s.x+dx), Math.round(s.y+dy));
+            if(name==scene[actualObj].name){
+              
+              //dibujar axis de rotacion
+              
+              var rxs=new Array();
+              for(var k=0;k< raxis.length;k++){
+              var rP = project(raxis[k], camara);
+              rxs.push(rP);
+              //console.log(rP.x)
+              
+              context.strokeStyle = "rgba(233, 35, 102,1)"
+              context.rect(Math.round(rP.x+dx), Math.round(rP.y+dy),2,2);
               context.stroke();
-              context.fill();
+              
+              }
               context.closePath();
+              console.log(rxs[0].x+dx);
+              var ra =Math.round(Math.sqrt(Math.pow((rxs[0].x-Or.x),2)+Math.pow(rxs[0].y-Or.y,2)));
+              if(ra<0){
+                ra *= -1;
+              }
+              console.log(ra);
+              context.moveTo(rxs[0].x+dx,rxs[0].y+dy);
+              context.ellipse(Math.round(Or.x+dx),Math.round(Or.y+dy),30,50, (180*3.1416)/180 ,0,1.57);
+              context.stroke();
+              
+              
+              //dibujar ;axis
+              for(var i= 0;i<3;i++){
+                
+                context.beginPath();
+                context.moveTo(Or.x+dx, Or.y +dy);
+                context.strokeStyle = colors[i];
+                context.fillStyle = colors[i];
+                var s = project(axis[i], camara);
+                context.lineTo(Math.round(s.x+dx), Math.round(s.y+dy));
+              
+                //console.log('dibujando', axis[i], s.x+dx, s.y+dy);
+                context.rect(Math.round(s.x+dx), Math.round(s.y+dy), 1.4, 1.4);
+                context.font = "8px Arial";
+                context.fillText(ax[i], Math.round(s.x+dx), Math.round(s.y+dy));
+                context.stroke();
+                context.fill();
+                context.closePath();
+              }
+              
+              
+              
             }
-
-            */
-
+            
         }
 
         function drawVertices(){
@@ -1117,7 +1169,7 @@ function engine(){
               context.lineWidth = '4';
               context.rect(P.x+dx, P.y+dy, 1, 1);
               context.font="24px Arial";
-              context.fillText(i,P.x+dx, P.y+dy);
+              //context.fillText(i,P.x+dx, P.y+dy);
               context.stroke();
               context.closePath();
           }
