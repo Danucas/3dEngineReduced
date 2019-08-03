@@ -41,7 +41,7 @@ function engine(){
           camara.pos.z = 2;
           camara.rotation.z = 3.1416;
           camara.type = 'self';
-         
+
           viewport = new Viewport();
           initialize3dCanvas();
 
@@ -110,7 +110,7 @@ function engine(){
             cubo = mod;
             fi = file;
             scene.push(md);
-            
+
             rend();
           });
         }
@@ -141,7 +141,7 @@ function engine(){
                var x = Math.floor(Math.random()*(30 - - 20)) + + - 20;
               var y  = Math.floor(Math.random()*(30 - - 10)) + + - 10;
               var z  = Math.floor(Math.random()*(100 - 40)) + + 40;
-              
+
               newCube.ObjTranslation = {x: x , y: y, z: b};
               newCube.scala = scal;
               newCube.setColor({r:105, g:100, b:30});
@@ -449,7 +449,7 @@ function engine(){
               this.axis = this.setCenterOrigin(model.vertices)[1];
               this.rgb = {r:156,g:226, b:250
               };
-              
+
               this.rotaxis = this.setCenterOrigin(model.vertices)[2];
               //console.log(this.rotaxis);
            }
@@ -464,14 +464,14 @@ function engine(){
             return this.translate([this.origin.x, this.origin.y, this.origin.z]);
            }
            getRaxis(pos){
-             
+
              var raxs=new Array();
              for(var k=0;k<this.rotaxis[pos].length;k++){
-        
+
              var a = this.translate(this.rotate(this.scalar(this.rotaxis[pos][k])));
              raxs.push([round(a[0], 2), round(a[1],2),round(a[2],2)]);
              }
-             
+
              return raxs;
              }
 
@@ -519,7 +519,7 @@ function engine(){
              var rxaxisx1 = round(xMid,2);
              var rxaxisy1 = round(yMid,2);
              var rxaxisz1 = round(zMin,2);
-             
+
              var rxaxisx2 = round(xMid,2);
              var rxaxisy2 = round(yMax,2);
              var rxaxisz2 = round(zMin,2);
@@ -765,16 +765,16 @@ function engine(){
                   var tempx = vertice[0]-or[0];
                   var tempy = vertice[1]-or[1];
                   var tempz = vertice[2]-or[2];
-                  
+
                 }else{
                   var tempx = vertice[0]-this.pos.x;
                   var tempy = vertice[1]-this.pos.y;
                   var tempz = vertice[2]-this.pos.z;
                 }
 
-                
 
-                 
+
+
                  var overX = this.rotation.x;
                  var overY = this.rotation.y;
                  var overZ = this.rotation.z;
@@ -838,7 +838,7 @@ function engine(){
 
 
 
-        
+
         var Parent = {
             pos:{x: 0, y:0, z:20}
         }
@@ -1098,46 +1098,80 @@ function engine(){
             var colors = ['blue','red',  'green'];
             var ax = ['x', 'y', 'z'];
             context.lineWidth = '1';
-            
+
             //console.log(raxis);
             //dibujar axis
             if(name==scene[actualObj].name){
-              
+
               //dibujar axis de rotacion
-              
+              //se hace la projeccion de los vertices y se agregan a una lista
               var rxs=new Array();
+              context.beginPath();
               for(var k=0;k< raxis.length;k++){
-              var rP = project(raxis[k], camara);
-              rxs.push(rP);
-              //console.log(rP.x)
-              
-              context.strokeStyle = "rgba(233, 35, 102,1)"
-              context.rect(Math.round(rP.x+dx), Math.round(rP.y+dy),2,2);
-              context.stroke();
-              
+                var rP = project(raxis[k], camara);
+                rxs.push(rP);
+                //console.log(rP.x)
+                //se dibujan los puntos de los vertices
+                context.strokeStyle = "rgba(233, 35, 102,1)"
+                context.rect(Math.round(rP.x+dx), Math.round(rP.y+dy),2,2);
+                context.stroke();
+
               }
               context.closePath();
+
+
               console.log(rxs[0].x+dx);
-              var ra =Math.round(Math.sqrt(Math.pow((rxs[0].x-Or.x),2)+Math.pow(rxs[0].y-Or.y,2)));
-              if(ra<0){
-                ra *= -1;
-              }
-              console.log(ra);
-              context.moveTo(rxs[0].x+dx,rxs[0].y+dy);
-              context.ellipse(Math.round(Or.x+dx),Math.round(Or.y+dy),30,50, (180*3.1416)/180 ,0,1.57);
+              // distancias para el ellipse
+              var dov1 =Math.round(Math.sqrt(Math.pow((rxs[0].x-Or.x),2)+Math.pow(rxs[0].y-Or.y,2)));
+              var dov2 =Math.round(Math.sqrt(Math.pow((rxs[2].x-Or.x),2)+Math.pow(rxs[2].y-Or.y,2)));
+              var dov3 =Math.round(Math.sqrt(Math.pow((rxs[4].x-Or.x),2)+Math.pow(rxs[4].y-Or.y,2)));
+              var dov4 =Math.round(Math.sqrt(Math.pow((rxs[6].x-Or.x),2)+Math.pow(rxs[6].y-Or.y,2)));
+
+
+              var dovs = {dov1, dov2, dov3, dov4};
+
+
+              console.log(dovs);
+
+
+              //context.moveTo(rxs[0].x+dx,rxs[0].y+dy);
+
+              var Rcolors = ['rgb(29,76,270)','rgb(255,20,170)','rgb:(255,212,20)','rgb(20,255,47)'];
+              context.beginPath();
+              context.strokeStyle = Rcolors[0];
+              context.ellipse(Math.round(Or.x+dx),Math.round(Or.y+dy),dov1,dov2, (0*3.1416)/180 ,0,1.57);
               context.stroke();
-              
-              
+              context.closePath();
+
+              context.beginPath();
+              context.strokeStyle = Rcolors[1];
+              context.ellipse(Math.round(Or.x+dx),Math.round(Or.y+dy),dov2,dov3, (90*3.1416)/180 ,0,1.57);
+              context.stroke();
+              context.closePath();
+
+              context.beginPath();
+              context.strokeStyle = Rcolors[2];
+              context.ellipse(Math.round(Or.x+dx),Math.round(Or.y+dy),dov3,dov4, (180*3.1416)/180 ,0,1.57);
+              context.stroke();
+              context.closePath();
+
+              context.beginPath();
+              context.strokeStyle = Rcolors[3];
+              context.ellipse(Math.round(Or.x+dx),Math.round(Or.y+dy),dov4,dov1, (270*3.1416)/180 ,0,1.57);
+              context.stroke();
+              context.closePath();
+
+
               //dibujar ;axis
               for(var i= 0;i<3;i++){
-                
+
                 context.beginPath();
                 context.moveTo(Or.x+dx, Or.y +dy);
                 context.strokeStyle = colors[i];
                 context.fillStyle = colors[i];
                 var s = project(axis[i], camara);
                 context.lineTo(Math.round(s.x+dx), Math.round(s.y+dy));
-              
+
                 //console.log('dibujando', axis[i], s.x+dx, s.y+dy);
                 context.rect(Math.round(s.x+dx), Math.round(s.y+dy), 1.4, 1.4);
                 context.font = "8px Arial";
@@ -1146,11 +1180,11 @@ function engine(){
                 context.fill();
                 context.closePath();
               }
-              
-              
-              
+
+
+
             }
-            
+
         }
 
         function drawVertices(){
@@ -1610,7 +1644,7 @@ function engine(){
           scene[actualObj].velocity = 0;
           //console.log(obj.axis[0][2]);
           update();
-          
+
         }
         var frame = 0;
         var fps = round(1000/15, 0);
@@ -1619,7 +1653,7 @@ function engine(){
         var initDif;
         function update(){
           console.log(fps);
-          
+
           upd = setInterval(function(){
             var obj = scene[actualObj];
             var maxSpeed = 2;
@@ -1635,7 +1669,7 @@ function engine(){
                         'axisZ pos: ', obj.transform(obj.axis[2]),
                         'obj origin: ', obj.transform([obj.origin.x, obj.origin.y, obj.origin.z]),
                         'motion values: ', mo);*/
-            
+
             //console.log({x:obj.ObjTranslation.x+mo[0], y:obj.ObjTranslation.y+mo[1], z:obj.ObjTranslation.z+mo[2]});
             var x = round((mo.obj.x/frameRate), 2);
             var y = round((mo.obj.y/frameRate), 2);
@@ -1653,16 +1687,16 @@ function engine(){
 
             if(frame%15==0){
               console.log(frame);
-              //console.log('mo:',{x:x,y:y,z:z}); 
+              //console.log('mo:',{x:x,y:y,z:z});
             }
-            
+
             //sumTranslate({x:mo[0],y:mo[1], z:mo[2]});
             frame ++;
             //if(!rendering){
               rendering = false;
               renderScene(scene);
             //}
-            
+
           },fps );
         }
         function motionValues(axis, origin){
@@ -1694,8 +1728,8 @@ function engine(){
             var xm = (scene[actualObj].velocity*xdiff)/initDif.x;
             var ym = (scene[actualObj].velocity*xdiff)/initDif.y;
             var zm = (scene[actualObj].velocity*xdiff)/initDif.z;
-            
-            
+
+
 
             var xcam = (camDistance*xdiff)/initDif.x;
             if(isNaN(xcam)){xcam = 0}
@@ -1728,12 +1762,8 @@ function engine(){
           frame = 0;
         }
 
-        
+
 
 }
 
 export default engine;
-
-
-
-
