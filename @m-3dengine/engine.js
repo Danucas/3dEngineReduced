@@ -1019,7 +1019,11 @@ function engine(){
             context.clearRect(0, 0, canvas.width, canvas.height);
             //var axis = dibujarWorldAxis(context);
             console.log('Camara pos: ', camara.pos);
-            console.log('ObjTranslation: ', scene[actualObj].ObjTranslation);
+
+            var objR= Object.values(scene[actualObj].ObjRotation);
+            var objT = Object.values(scene[actualObj].ObjTranslation);
+            console.log(`%c${scene[actualObj].name} status:` , 'background:rgb(255,100,0);color: #ffffff; font-weight: bold;')
+            console.log(`position: x:${objT[0]} y:${objT[1]} z:${objT[2]}\nrotation: x:${objR[0]} y:${objR[1]} z:${objR[2]}`);
             //console.log('Viewport pos: ', viewport.pos);
             var object_strokeLine = 'rgba(0,0,0, 1)';
             scena.forEach(object=>{
@@ -1106,6 +1110,9 @@ function engine(){
               //dibujar axis de rotacion
               //se hace la projeccion de los vertices y se agregan a una lista
               var rxs=new Array();
+
+              //drawRotationAxis(rxs, Or)
+
               context.beginPath();
               for(var k=0;k< raxis.length;k++){
                 var rP = project(raxis[k], camara);
@@ -1117,11 +1124,21 @@ function engine(){
                 context.stroke();
 
               }
+              // rxs.sort(function(rx1, rx2){
+              //   var x1 = rx1.x+dx, x2 = rx2.x+dx,
+              //       y1 = rx1.y+dy, y2 = rx2.y+dy;
+              //   var index1 =Math.round((y1 * width)+x1);
+              //   var index2 =Math.round((y2 * width)+x2);
+              //   return index1-index2;
+              // });
+
+
               context.closePath();
 
 
-              console.log(rxs[0].x+dx);
+              console.log(`${rxs[0].x+dx}`);
               // distancias para el ellipse
+
               var dov1 =Math.round(Math.sqrt(Math.pow((rxs[0].x-Or.x),2)+Math.pow(rxs[0].y-Or.y,2)));
               var dov2 =Math.round(Math.sqrt(Math.pow((rxs[2].x-Or.x),2)+Math.pow(rxs[2].y-Or.y,2)));
               var dov3 =Math.round(Math.sqrt(Math.pow((rxs[4].x-Or.x),2)+Math.pow(rxs[4].y-Or.y,2)));
@@ -1133,31 +1150,96 @@ function engine(){
 
               console.log(dovs);
 
+              //Definir angulos de rotacion para los elipses
+              var det = dx*0.4;
+
+              //definir puntos cardinales
+              var cardPoints = {
+                nort: {
+                  x: Or.x+dx,
+                  y: Or.y-det+dy
+                },
+                south: {
+                  x: Or.x+dx,
+                  y: Or.y+det+dy
+                },
+                east:{
+                  x: Or.x+det+dx,
+                  y: Or.y+dy
+                },
+                west:{
+                  x: Or.x-det+dx,
+                  y: Or.y+dy
+                }
+              };
+
+              var a1 = Math.round(Math.sqrt(Math.pow((cardPoints.west.x-(rxs[0].x+dx)),2)+Math.pow((cardPoints.west.y-(rxs[0].y+dy)),2)));
+              var A1 = ((Math.pow(a1, 2)-Math.pow(dov1, 2)-Math.pow(det,2))/((dov1*det)*(-2)))
+              A1 = Math.acos(A1);
+              A1 = (Number.isNaN(A1)) ? 0:A1;
+              console.log(A1);
+              A1 = (rxs[0].y>Or.y)?(A1*(180/Math.PI)):0;
+
+              var a1P = Math.round(Math.sqrt(Math.pow(((rxs[2].x+dx)-(rxs[0].x+dx)),2)+Math.pow(((rxs[0].y+dy)-(rxs[0].y+dy)),2)));
+              var A1P = ((Math.pow(a1P, 2)-Math.pow(dov1, 2)-Math.pow(det,2))/((dov1*det)*(-2)))
+              A1P = Math.acos(A1P);
+              A1P = (Number.isNaN(A1P)) ? 0:A1P;
+              A1P = (A1P*(180/Math.PI));
+              var AngDis1 = 360-A1+A1P>360?(360-A1+A1P)-360:A1P;
+              console.log(`%cAngDis1: ${AngDis1}`, 'color: green;');
+
+
+              //A1 = A1>0?A1:0;
+              console.log(`%cAngulo del primer triangulo: ${A1}`, 'color: purple');
+              context.beginPath();
+              context.moveTo(cardPoints.west.x, cardPoints.west.y);
+              context.lineTo(rxs[0].x+dx,rxs[0].y+dy);
+              context.lineTo(Or.x+dx, Or.y+dy);
+              context.lineTo(cardPoints.west.x, cardPoints.west.y);
+              context.stroke();
+              context.closePath();
+              console.log('%ctriangulo1: ', 'color: green;');
+              console.log(dov1, a1, det);
+
+
+
+              console.log(cardPoints);
+               //variable determinante de los triangulos
+              // var T1 =
+              // var T2
+              // var T3
+              // var T4
+
 
               //context.moveTo(rxs[0].x+dx,rxs[0].y+dy);
-
-              var Rcolors = ['rgb(29,76,270)','rgb(255,20,170)','rgb:(255,212,20)','rgb(20,255,47)'];
+              context.fillStyle = 'rgb(0, 0, 0)';
+              var Rcolors = ['rgb(29,76,270)','rgb(255,20,170)','rgb(255,212,20)','rgb(20,255,47)'];
               context.beginPath();
               context.strokeStyle = Rcolors[0];
-              context.ellipse(Math.round(Or.x+dx),Math.round(Or.y+dy),dov1,dov2, (0*3.1416)/180 ,0,1.57);
+              context.ellipse(Math.round(Or.x+dx),Math.round(Or.y+dy),dov1,dov2, ((180)*Math.PI)/180 ,(0)*Math.PI/180,(90)*Math.PI/180);
+              context.fillText('x1' ,rxs[0].x+dx, rxs[0].y+dy);
+              context.stroke();
+
+              context.closePath();
+
+              context.beginPath();
+              //context.strokeStyle = Rcolors[1];
+              context.ellipse(Math.round(Or.x+dx),Math.round(Or.y+dy),dov2,dov3, (270*Math.PI)/180 ,0,1.57);
+              context.fillText('x2' ,rxs[2].x+dx, rxs[2].y+dy);
               context.stroke();
               context.closePath();
 
               context.beginPath();
-              context.strokeStyle = Rcolors[1];
-              context.ellipse(Math.round(Or.x+dx),Math.round(Or.y+dy),dov2,dov3, (90*3.1416)/180 ,0,1.57);
+              //context.strokeStyle = Rcolors[2];
+              context.ellipse(Math.round(Or.x+dx),Math.round(Or.y+dy),dov3,dov4, (0*Math.PI)/180 ,0,1.57);
+              context.fillText('x3' ,rxs[4].x+dx, rxs[4].y+dy);
               context.stroke();
               context.closePath();
 
               context.beginPath();
-              context.strokeStyle = Rcolors[2];
-              context.ellipse(Math.round(Or.x+dx),Math.round(Or.y+dy),dov3,dov4, (180*3.1416)/180 ,0,1.57);
-              context.stroke();
-              context.closePath();
-
-              context.beginPath();
-              context.strokeStyle = Rcolors[3];
-              context.ellipse(Math.round(Or.x+dx),Math.round(Or.y+dy),dov4,dov1, (270*3.1416)/180 ,0,1.57);
+              //context.strokeStyle = Rcolors[3];
+              context.ellipse(Math.round(Or.x+dx),Math.round(Or.y+dy),dov4,dov1, (90*Math.PI)/180 ,0,1.57);
+              context.fillText('x4' ,rxs[6].x+dx, rxs[6].y+dy);
               context.stroke();
               context.closePath();
 
@@ -1240,6 +1322,7 @@ function engine(){
           console.log(code);
           switch(code){
               case 27:
+                 context.clearRect(width, height, 0, 0)
                  initCamara();
                  break;
               case 37:
