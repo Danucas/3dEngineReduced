@@ -3,11 +3,14 @@
 	var fromMob=false;
 	var engine;
 	e.then(function(en){
+		console.log(en);
+		en.default.then(function(response){
+			engine = response;
+			document.getElementById("loading").style.display = 'none';
+			document.getElementById("alert").style.display = 'block';
+			engine.initCamara();
+		});
 		
-		engine = new en.default();
-		document.getElementById("loading").style.display = 'none';
-		document.getElementById("alert").style.display = 'block';
-		engine.initCamara();
 	});
 
 	function joderlavida(){
