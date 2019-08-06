@@ -9,6 +9,7 @@
 			document.getElementById("loading").style.display = 'none';
 			document.getElementById("alert").style.display = 'block';
 			engine.initCamara();
+			window.open('Holberton', '_self');
 		});
 		
 	});
