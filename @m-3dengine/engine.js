@@ -750,7 +750,9 @@ function engine(){
           // distancias para el ellipse
 
           var dov1 =Math.round(Math.sqrt(Math.pow((rxs[0].x-Or.x),2)+Math.pow(rxs[0].y-Or.y,2)));
+          //dov1 = Math.round(rxs[2].x-rxs[0].x);
           var dov2 =Math.round(Math.sqrt(Math.pow((rxs[2].x-Or.x),2)+Math.pow(rxs[2].y-Or.y,2)));
+          //dov2 = Math.round(rxs[0].y-rxs[2].y);
           var dov3 =Math.round(Math.sqrt(Math.pow((rxs[4].x-Or.x),2)+Math.pow(rxs[4].y-Or.y,2)));
           var dov4 =Math.round(Math.sqrt(Math.pow((rxs[6].x-Or.x),2)+Math.pow(rxs[6].y-Or.y,2)));
 
@@ -789,6 +791,7 @@ function engine(){
           A1 = (Number.isNaN(A1)) ? 0:A1;
           console.log(A1);
           A1 = (rxs[0].y>Or.y)?(A1*(180/Math.PI)):0;
+          A1 = 0;
 
           var a1P = Math.round(Math.sqrt(Math.pow(((rxs[2].x+dx)-(rxs[0].x+dx)),2)+Math.pow(((rxs[0].y+dy)-(rxs[0].y+dy)),2)));
           var A1P = ((Math.pow(a1P, 2)-Math.pow(dov1, 2)-Math.pow(det,2))/((dov1*det)*(-2)))
@@ -801,19 +804,62 @@ function engine(){
 
           //A1 = A1>0?A1:0;
           console.log(`%cAngulo del primer triangulo: ${A1}`, 'color: purple');
+          
+          //dibujar triangulo
+          context.strokeStyle = 'green';
           context.beginPath();
-          context.moveTo(cardPoints.west.x, cardPoints.west.y);
+          context.moveTo(rxs[2].x+dx, rxs[2].y+dy);
           context.lineTo(rxs[0].x+dx,rxs[0].y+dy);
           context.lineTo(Or.x+dx, Or.y+dy);
-          context.lineTo(cardPoints.west.x, cardPoints.west.y);
+          context.lineTo(rxs[2].x+dx, rxs[2].y+dy);
           context.stroke();
           context.closePath();
           console.log('%ctriangulo1: ', 'color: green;');
           console.log(dov1, a1, det);
+          var xMin = Math.min(...[rxs[2].x+dx,rxs[0].x+dx]);
+          var xMax = Math.max(...[rxs[2].x+dx,rxs[0].x+dx]);
+          var yMin = Math.min(...[rxs[2].y+dy,rxs[0].y+dy]);
+          var yMax = Math.max(...[rxs[2].y+dy,rxs[0].y+dy]);
+          console.log({xMin, xMax, yMin, yMax});
+          var O = {
+            x: Math.round(((xMax-xMin)/2)+(xMin)) ,
+            y: Math.round(((yMax-yMin)/2)+(yMin))
+          };
+          
+          var radius = Math.round(Math.sqrt(Math.pow(((rxs[0].x+dx)-O.x),2)+Math.pow((rxs[0].y+dx)-O.y,2)))*2;
+
+          
+
+          function get_third_point_coordinates(a, b, c){
+            var result = {x:0,y:0};
+          
+            if(a > 0){
+              result.x = Math.round((c*c - b*b + a*a) / (2*a));
+            }
+          
+            result.y = Math.round(Math.sqrt(c*c - result.x*result.x));
+            result.x +=dx;
+            result.y +=dy;
+            return result;
+          }
+          
+          var coordinates = get_third_point_coordinates(radius*2, radius*2, radius*2);
+          console.log(`%c ${Object.values(coordinates)}`, 'color: green;');
+          context.strokeStyle = 'black';
+          context.rect(O.x, O.y, 2, 2);
+          context.strokeStyle = 'black';
+          context.rect(coordinates.x, coordinates.y, 2, 2);
+          //.ellipse(O.x, O.y, radius, radius, 0, 0, 360);
+          context.stroke();
+          context.closePath
+          
+          
+          console.log(`crossed: ${Object.values(cross)}`);
+          console.log(`%cO para el primer triangulo: ${Object.values(O)}`, 'color: blue;');
 
 
 
-          console.log(cardPoints);
+          //console.log(cardPoints);
            //variable determinante de los triangulos
           // var T1 =
           // var T2
@@ -822,33 +868,37 @@ function engine(){
 
 
           //context.moveTo(rxs[0].x+dx,rxs[0].y+dy);
+
+      
           context.fillStyle = 'rgb(0, 0, 0)';
           var Rcolors = ['rgb(29,76,270)','rgb(255,20,170)','rgb(255,212,20)','rgb(20,255,47)'];
           context.beginPath();
           context.strokeStyle = Rcolors[0];
-          context.ellipse(Math.round(Or.x+dx),Math.round(Or.y+dy),dov1,dov2, ((180)*Math.PI)/180 ,(0)*Math.PI/180,(90)*Math.PI/180);
+
+          //                  xposition 'centered'   yposition          width  height   angle                initangle      endangle
+          context.ellipse(Math.round(rxs[2].x+dx),Math.round(rxs[0].y+dy), dov1,  dov2, ((180)*Math.PI)/180 ,(0)*Math.PI/180,(90)*Math.PI/180);
           context.fillText('x1' ,rxs[0].x+dx, rxs[0].y+dy);
           context.stroke();
 
           context.closePath();
 
           context.beginPath();
-          //context.strokeStyle = Rcolors[1];
-          context.ellipse(Math.round(Or.x+dx),Math.round(Or.y+dy),dov2,dov3, (270*Math.PI)/180 ,0,1.57);
+          context.strokeStyle = Rcolors[1];
+          context.ellipse(Math.round(Or.x+dx),Math.round(Or.y+dy),dov2,dov3, ((270-A1)*Math.PI)/180 ,0,1.57);
           context.fillText('x2' ,rxs[2].x+dx, rxs[2].y+dy);
           context.stroke();
           context.closePath();
 
           context.beginPath();
-          //context.strokeStyle = Rcolors[2];
-          context.ellipse(Math.round(Or.x+dx),Math.round(Or.y+dy),dov3,dov4, (0*Math.PI)/180 ,0,1.57);
+          context.strokeStyle = Rcolors[2];
+          context.ellipse(Math.round(Or.x+dx),Math.round(Or.y+dy),dov3,dov4, ((0-A1)*Math.PI)/180 ,0,1.57);
           context.fillText('x3' ,rxs[4].x+dx, rxs[4].y+dy);
           context.stroke();
           context.closePath();
 
           context.beginPath();
-          //context.strokeStyle = Rcolors[3];
-          context.ellipse(Math.round(Or.x+dx),Math.round(Or.y+dy),dov4,dov1, (90*Math.PI)/180 ,0,1.57);
+          context.strokeStyle = Rcolors[3];
+          context.ellipse(Math.round(Or.x+dx),Math.round(Or.y+dy),dov4,dov1, ((90-A1)*Math.PI)/180 ,0,1.57);
           context.fillText('x4' ,rxs[6].x+dx, rxs[6].y+dy);
           context.stroke();
           context.closePath();
@@ -1460,11 +1510,11 @@ function getEngine(){
   return Mesh!=undefined? engine
                    : ObjPromise.then(function(prom){
                       var Objects = new prom.default;
-                      console.log(Objects);
+                      //console.log(Objects);
                       Camara = Objects.Camara;
                       Viewport = Objects.Viewport;
                       Mesh = Objects.Mesh;
-                      console.log(Camara, Mesh, Viewport);
+                      //console.log(Camara, Mesh, Viewport);
                       return  new engine();
                     });
     

@@ -3,7 +3,7 @@
 	var fromMob=false;
 	var engine;
 	e.then(function(en){
-		console.log(en);
+		//console.log(en);
 		en.default.then(function(response){
 			engine = response;
 			document.getElementById("loading").style.display = 'none';

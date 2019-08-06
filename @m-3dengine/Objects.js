@@ -372,7 +372,7 @@ function Objects(){
     
          rotate(vertice){
     
-             var or = this.target;//scene[actualObj].getTargetOrigin();
+             var or = this.target;//
              //console.log(or)
     
              if(this.type=='third-p'){

@@ -1,0 +1,31 @@
+body{
+    background-color: black;
+    width: 100vw;
+    height: 100vw;
+    display: flex;
+    flex-direction: column;
+    color: azure;
+    font-family: sans-serif;
+    font-weight: bold;
+}
+
+article{
+    flex: 2;
+    background-color: red;
+    color: azure;
+    overflow-y: auto;
+}
+
+aside{
+    flex:1;
+    background-color: blue;
+    color: azure;
+    overflow-y: auto;
+}
+
+main{
+    flex:auto;
+    display: flex;
+    flex-direction: row;
+    color: azure;
+}
